@@ -21,6 +21,6 @@ export default{
     JWT_ACCESS_USER_SECRET : process.env.JWT_ACCESS_USER_SECRET,
     JWT_REFRESH_USER_SECRET : process.env.JWT_REFRESH_USER_SECRET,
     JWT_ACCESS_EXP : Number(process.env.JWT_ACCESS_EXP),
-    JWT_REFRESH_EXP : process.env.JWT_REFRESH_EXP
-
+    JWT_REFRESH_EXP : process.env.JWT_REFRESH_EXP,
+    GOOGLE_CLIENT_ID : process.env.GOOGLE_CLIENT_ID.split(",")
 }
