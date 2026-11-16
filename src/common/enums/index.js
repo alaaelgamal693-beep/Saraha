@@ -1,4 +1,7 @@
 export {GenderEnum} from "./gender.enum.js"
 export {HashEnum} from "./hash.enum.js"
 export {tokenTypeEnum} from "./tokenType.enum.js"
+export {authEnum} from "./auth.enum.js"
 export {RoleEnum} from "./role.enum.js"
+export {ProviderEnum} from "./provider.enum.js"
+export { langEnum} from "./lang.enum.js"
