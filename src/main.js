@@ -3,9 +3,8 @@ import configService from "./config/config.service.js"
 import {dbconnect} from "./database/connection.js"
 import {errorHandler} from "./common/index.js"
 import {authController} from "./module/auth/auth.controller.js"
-import crypto from "node:crypto"
-import {encryption , decryption} from "./common/security/encryption.js"
-import { userController } from './module/user/user.controller.js';
+import { userController } from './module/user/user.controller.js'
+import cors from "cors"
 
 
 const app = express()
@@ -15,7 +14,7 @@ await dbconnect()
 
 
 
-app.use(express.json())
+app.use(cors() , express.json())
 
 
 app.use("/auth", authController)
