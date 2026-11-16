@@ -10,9 +10,9 @@ export const NotFoundException = (message)=>{
     })
 }
 
-export const UnauthorizedException = (message)=>{
+export const UnauthorizedException = (message = "Unauthorized") => {
     mainException({
-        message :"Unauthorized", cause : 401
+        message, cause: 401
     })
 }
 
