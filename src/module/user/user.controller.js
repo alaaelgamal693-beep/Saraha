@@ -1,35 +1,38 @@
-import {Router} from "express"
+import { Router } from "express"
 import * as us from "./user.service.js"
-import {response, RoleEnum, tokenTypeEnum} from "../../common/index.js"
-import { auth} from "../../common/middleware/authentcation.js"
-import {authorization} from "../../common/middleware/authorization.js"
+import { response, RoleEnum, tokenTypeEnum, validation } from "../../common/index.js"
+import { auth } from "../../common/middleware/authentcation.js"
+import { authorization } from "../../common/middleware/authorization.js"
+import { userProfileSchema } from "./user.validation.js";
 
 export const userController = Router()
 
-
-
-
-
-userController.get("/profile", auth({tokenType : tokenTypeEnum.ACCESS}) , async(req,res,next)=>{
-    response({
-        res ,  data:req.user , status :200 , message : "user fetched"
-    })
+userController.get("/profile", auth({ tokenType: tokenTypeEnum.ACCESS }), async (req, res,next) => {
+    response({ 
+        res, data: req.user, message: "user fetched" })
 })
 
 
-userController.get("/admin-profile", auth({tokenType : tokenTypeEnum.ACCESS}) , authorization([RoleEnum.admin]) , async(req,res,next)=>{
-    
-    response({
-        res ,  data:req.user , status :200 , message : "user fetched"
-    })
+userController.get("/user-profile/:userId", validation(userProfileSchema), async (req, res, next) => {
+    let user = await us.getUserProfile(req.validate.params.userId)
+    response({ 
+        res, data: user, message: "user fetched" })
 })
 
+userController.get("/admin-profile",auth({ tokenType: tokenTypeEnum.ACCESS }), authorization([RoleEnum.admin]), async (req, res, next) => {
+        response({ 
+            res, data: req.user, message: "user fetched" })
+    }
+)
 
-userController.get("/update-user",auth({}) , async(req,res,next)=>{
-    let token = req.headers.authorization
-
-    let user = await us.updateUser(token)
-    response({
-        res ,  data:user , status :200 , message : "user updated in"
-    })
+userController.patch("/update-user", auth({ tokenType: tokenTypeEnum.ACCESS }), async (req, res, next) => {
+    let user = await us.updateUser(req.user)
+    response({ 
+        res, data: user, message: "user updated in" })
 })
+
+userController.post("/rotate-token",auth({ tokenType: tokenTypeEnum.REFRESH }),async (req, res) => {
+        const tokens = us.rotateToken(req.user, req.payload)
+        response({ res, data: tokens, message: "token rotated" })
+    }
+)
