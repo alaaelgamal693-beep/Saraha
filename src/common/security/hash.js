@@ -1,10 +1,10 @@
 import {hash, compare , genSalt} from  "bcrypt"
 import configService from "../../config/config.service.js"
-import {HashEnum} from "../index.js"
+import {HashEnum} from "../enums/hash.enum.js"
 import argon2 from "argon2"
 
 
-export const myHash = async ({plainText , minor = "b" , lib = HashEnum.bcrypt})=> {
+export const myHash = async ({plainText , minor = "b" , lib = HashEnum.argon2})=> {
 
     switch(lib){
         case HashEnum.bcrypt:
