@@ -1,28 +1,40 @@
+
 import jwt from "jsonwebtoken"
 import configService from "../../config/config.service.js"
 import { tokenTypeEnum } from "../enums/tokenType.enum.js"
 import { RoleEnum } from "../enums/role.enum.js"
 import { UnauthorizedException } from "../utils/exceptions.js"
+import { webcrypto } from "node:crypto"
+import { userRevokeKey } from "../service/cacheKeys.service.js"
+import { get } from "../service/cache.service.js"
+import  ur  from "../../database/repo/user.repo.js"
 
 export const createTokens = ({ payload = {}, options = {}, role = RoleEnum.user }) => {
-    const secrets = getRoleSecret(role)
+    let secrets = getRoleSecret(role)
+    let jti = webcrypto.randomUUID()
 
-    const accessToken = createToken({
-        payload,
+    let accessToken = createToken({
+        payload: {
+            ...payload,
+            jti
+        },
         options: {
             ...options,
             expiresIn: configService.JWT_ACCESS_EXP,
-            audience: [role],
+            audience: [role]
         },
         secret: secrets.access,
     })
 
-    const refreshToken = createToken({
-        payload,
+    let refreshToken = createToken({
+        payload: {
+            ...payload,
+            jti
+        },
         options: {
             ...options,
             expiresIn: configService.JWT_REFRESH_EXP,
-            audience: [role],
+            audience: [role]
         },
         secret: secrets.refresh,
     })
@@ -54,17 +66,20 @@ export const createToken = ({ payload = {}, options = {}, secret = configService
     return jwt.sign(payload, secret, options)
 }
 
-export const verifyToken = ({ token, tokenType = tokenTypeEnum.ACCESS }) => {
-    const decoded = jwt.decode(token)
-    if (!decoded) {
-        throw UnauthorizedException("invalid token")
-    }
+export const verifyToken = async ({ token, tokenType = tokenTypeEnum.ACCESS }) => {
 
-    const role = Array.isArray(decoded.aud) ? decoded.aud[0] : decoded.aud
+    let { aud, sub, jti, iat } = jwt.decode(token)
 
-    try {
-        return jwt.verify(token, getSecret({ tokenType, role }))
-    } catch (err) {
-        throw UnauthorizedException(err.message)
-    }
+    let isRevoked = await get({
+        key: userRevokeKey({ userId: sub, jti })
+    })
+    if (isRevoked) UnauthorizedException("This token is revoked")
+
+        let user = await ur.findById({id:sub , projection:{changeCredenitalsAt:1}})
+        
+        if (user.changeCredenitalsAt &&
+            Math.ceil(user.changeCredenitalsAt.getTime() / 1000) > iat) {
+            UnauthorizedException("This token is revoked")
+        }
+    return jwt.verify(token, getSecret({ tokenType, role: aud[0] }))
 }
