@@ -30,7 +30,7 @@ export const auth = ({tokenType = tokenTypeEnum.ACCESS})=>{
 
         case authEnum.Bearer:
 
-            let payload = verifyToken({
+            let payload = await verifyToken({
                 token,
                 tokenType
             })
