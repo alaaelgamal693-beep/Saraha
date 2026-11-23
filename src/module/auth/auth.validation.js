@@ -39,14 +39,6 @@ export const signupSchema = (lang) => z.object({
             message: "userName must include space",
             });
         }
-
-        if (!email.endsWith("@gmail.com")) {
-            ctx.addIssue({
-            code: "custom",
-            path: ["email"],
-            message: "email must end with @gmail.com",
-            });
-        }
     }),
     query : z.strictObject({
         test : z.stringbool({
