@@ -12,7 +12,7 @@ export const NotFoundException = (message)=>{
 
 export const UnauthorizedException = (message = "Unauthorized") => {
     mainException({
-        message, cause: 401
+        message: message ?? "Unauthorized", cause: 401
     })
 }
 
@@ -31,5 +31,13 @@ export const ForbiddenException = (message)=>{
 export const BadRequestException = (message)=>{
     mainException({
         message , cause : 400
+    })
+}
+
+
+
+export const TooManyRequests = (message)=>{
+    mainException({
+        message : message || "Too many requests", cause : 429
     })
 }
