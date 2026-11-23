@@ -4,6 +4,7 @@ import {dbconnect} from "./database/connection.js"
 import {errorHandler} from "./common/index.js"
 import {authController} from "./module/auth/auth.controller.js"
 import { userController } from './module/user/user.controller.js'
+import {transporter} from "./common/index.js"
 import cors from "cors"
 
 
@@ -15,6 +16,7 @@ await dbconnect()
 
 
 app.use(cors() , express.json())
+
 
 
 app.use("/auth", authController)
