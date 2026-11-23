@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     password :{
         type : String,
         required : function(value){
-            return value.provider == ProviderEnum.system
+            return value?.provider == ProviderEnum.system
         },
     },
     phone:{
@@ -48,7 +48,9 @@ const userSchema = new mongoose.Schema({
         enum : Object.values(ProviderEnum),
         default : ProviderEnum.system
     },
-    image :String
+    image :String,
+    confirmEmail : Date,
+    changeCredenitalsAt : Date
 },{
     timestamps :true,
     strict : true,
